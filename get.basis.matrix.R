@@ -19,7 +19,8 @@ get.basis.matrix.piecewise.linear <- function(X, elements, seeds, R, nderiv=0)
   # Associate the points in X with the tessellation elements which contain them
   coords <- tcovering(seeds, elements, X)
   
-  # Evaluate points 
+  # Evaluate points, note: consider using shape functions field in basis_object for computations 
+  # will give same results but would make program usage more consistent
   if (nderiv==0) {
     # Allocate space for matrix PHI 
     Phi <- matrix(0, nrow=nrow(X), ncol=nrow(seeds))

@@ -10,7 +10,75 @@ innerprod <- function(basis_object, nderiv=0)
   
   if (nderiv==0) {
     
+    V <- basis_object$shape_functions$V; 
+    det_J <- basis_object$shape_functions$det_J
+    quad_points <- basis_object$quadvals$quad_points
+    quad_weight <- basis_object$quadvals$quad_weight
+    Grid <- basis_object$seeds
+    elements <- basis_object$elements
+
+    S <- length(V)
+    Q <- nrow(quad_points)
+    num_nodes <- nrow(Grid)
+    d <- ncol(Grid)
+    
+    M <- matrix(rep(0, num_nodes*num_nodes), nrow=num_nodes, ncol=num_nodes)
+    
+    for(ix in 1:nrow(elements)) {
+      # Get tessellation element
+      element_ix <- elements[ix, ]
+      X_l <- index.to.element(element_ix, Grid)
+      
+      # Jacobian information to compute integral in local coordinates
+      Jac_det <- det_J(X_l)
+      j_l <- abs(Jac_det)*quad_weight
+      
+      for (i in 1:length(element_ix)) {
+        for (j in 1:length(element_ix)) {
+          for (q in 1:Q) {
+            M[element_ix[i],element_ix[j]] <- M[element_ix[i],element_ix[j]] +
+              (V[[i]](quad_points[q, ])*V[[j]](quad_points[q ,])*j_l[q])
+          }
+        }
+      }
+    }
+    return(Matrix(M, sparse=TRUE))
+    
   } else if (nderiv==1) {
+     
+    # Note: This only works for regularly spaced grids at the moment -> don't think so, det_J(X_l) is computed
+    
+    dV <- basis_object$shape_functions$dV
+    det_J <- basis_object$shape_functions$det_J
+    quad_points <- basis_object$quadvals$quad_points
+    quad_weight <- basis_object$quadvals$quad_weight
+    Grid <- basis_object$seeds
+    elements <- basis_object$elements
+    
+    S <- length(dV)
+    Q <- nrow(quad_points)
+    num_nodes <- nrow(Grid)
+    d <- ncol(Grid)
+    
+    B <- matrix(rep(0, num_nodes*num_nodes), nrow=num_nodes, ncol=num_nodes)
+    
+    for (ix in 1:nrow(elements)) {
+      
+      element_ix <- elements[ix, ]
+      X_l <- index.to.element(element_ix, Grid)
+      Jac_det <- det_J(X_l)
+      j_l <- abs(Jac_det)*quad_weight
+      
+      for (i in 1:length(element_ix)) {
+        for (j in 1:length(element_ix)) {
+          for (q in 1:Q) {
+            B[element_ix[i], element_ix[j]] <- B[element_ix[i], element_ix[j]] + 
+              (dV[[i]](quad_points[q, ]) %*% dV[[j]](quad_points[q, ]))*j_l[q]
+          }
+        }
+      }
+    }
+    return(Matrix(B, sparse=TRUE))
     
   } else {
     stop("Implementation for computation of inner product matrices for D^{i}phi(X) for i > 1 not yet implemented!")

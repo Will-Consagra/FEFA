@@ -22,12 +22,12 @@ eval.inprod <- function(basis_object, nderiv=0)
     if (nderiv > 1) {
       stop("Piecewise linear basis only up to 1st order differentiable!")
     } 
-    
+    M <- innerprod(basis_object, nderiv=nderiv)
     #M <- innerprod(basis_obj)
   } else {
     stop("eval.inprod not yet implemented for basis of type '", type, "'")
   }
   
-  return(Phi)
+  return(M)
   
 }

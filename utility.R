@@ -27,3 +27,17 @@ tcovering <- function(seeds, elements, X)
   return(coords)
 }
 
+##Map index arrays to d+1 x d matrices of points corresponding to vertices in array
+##Must handle the d = 1, length(index) == 2, separately due to quirkiness of r 
+index.to.element <- function(element_ix, Grid) {
+  # Map index arrays to d+1 x d matrices of points corresponding to vertices in array
+  # Must handle the d = 1, length(index) == 2, separately due to quirkiness of r
+  # ELEMENT_IX ... numeric vector defining element via row indices in grid
+  # Grid ... nxd matrix of coordinates
+  X_l <- t(sapply(element_ix, function(e) Grid[e, ]))
+  if (length(element_ix) == 2) {
+    X_l <- t(X_l)
+  } 
+  return(X_l)
+}
+

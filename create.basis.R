@@ -62,6 +62,9 @@ create.polynomial.basis <- function(seeds, boundary=NULL,
                               warning = function(w) {print(w)}, 
                               error = function(e) {stop(e)})
   
+  # define the Jacobian mapping to reference element for purposes of numerical integration
+  shape_functions <- get.shape.functions(d, ord=norder)
+  
   # create r matirx: mapper between basis function i, tessellation element j and local function definition k
   # in the form R_ij <- k, where k \in {0, 1, ..., S} and 0 indicates the constant 0 function
   # note: enumeration technique for local shape functions is considered only for the linear functions over 
@@ -78,7 +81,7 @@ create.polynomial.basis <- function(seeds, boundary=NULL,
   R <- Matrix(R, sparse = TRUE)
   
   # create basis object 
-  basis_object <- basis(seeds, simplicial_complex, R, type, quadvals)
+  basis_object <- basis(seeds, simplicial_complex, shape_functions, R, type, quadvals)
   
   return(basis_object)
   
