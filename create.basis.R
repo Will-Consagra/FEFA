@@ -1,5 +1,5 @@
 
-create.polynomial.basis <- function(seeds, boundary=NULL,
+create.polynomial.basis <- function(seeds, chull=NULL,
                          norder=1, quadord=1) 
   
   {
@@ -7,8 +7,7 @@ create.polynomial.basis <- function(seeds, boundary=NULL,
   # Arguments
   # SEEDS ... a pxd dimensionsional matrix of knot points to center each piecewise basis element, 
   #             p = number of seeds, d = dimension of domain
-  # BOUNDARY ... (not yet implemented) function defining the boundary in R^d, for now we consider convex hull
-  #             of seeds to define boundary 
+  # CHULL ... R x d matrix, the R d-simplices defining the convexhull(seeds), given as indices into rows of seeds
   # NORDER ... order of piecewise polynomial basis define on each element, for now fixed at norder=1
   # QUADORD ... order of integration for numerical quadrature rule, for now fixed at quadord=1 
   
@@ -80,8 +79,12 @@ create.polynomial.basis <- function(seeds, boundary=NULL,
   }
   R <- Matrix(R, sparse = TRUE)
   
+  if(is.null(chull)){
+    chull <- get.convex.hull(seeds)
+  }
+  
   # create basis object 
-  basis_object <- basis(seeds, simplicial_complex, shape_functions, R, type, quadvals)
+  basis_object <- basis(seeds, simplicial_complex, shape_functions, R, chull, type, quadvals)
   
   return(basis_object)
   

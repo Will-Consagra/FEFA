@@ -1,6 +1,6 @@
 
 
-basis <- function(seeds, elements, shape_functions, R, type, quadvals)
+basis <- function(seeds, elements, shape_functions, R, chull, type, quadvals)
   
 {
   # Generator (initialization) function for basis class, this function should not be user facing and 
@@ -10,6 +10,7 @@ basis <- function(seeds, elements, shape_functions, R, type, quadvals)
   # ELEMENTS ... Tx(d+1) dimensional matrix defining the tessellation of input domain
   # SHAPE_FUNCTIONS ... list of functions for computing local integrals 
   # R ... nxT dimensional (sparse) matrix defining the local ordering of node i in element j
+  # CHULL ... R x d matrix, the R d-simplices defining the convexhull(seeds), given as indices into rows of seeds
   # TYPE ... Class of piecewise functions to be used as basis, for now fixed at "piecewise_linear"
   # QUADVALS ... list of two: <quad_weights, quad_points> defining the numerical quadrature rule
   
@@ -20,7 +21,7 @@ basis <- function(seeds, elements, shape_functions, R, type, quadvals)
   obj.call <- match.call()
   
   basis_object <- list(call=obj.call, seeds=seeds, elements=elements, 
-                       shape_functions=shape_functions, R=R, 
+                       shape_functions=shape_functions, R=R, chull=chull,
                        type=type, quadvals=quadvals)
   
   oldClass(basis_object) <- "basis"
