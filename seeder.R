@@ -23,7 +23,7 @@ equi.seeder <- function(V, r=5)
     
 }
 
-runif.seeder <- function(V, N, repl=20, crit="max_min") 
+runif.seeder <- function(V, N, repl=1, crit="max_min", include_boundary=TRUE) 
   
 {
   # Generate a set of seeds sampled according to a d-dimensional uniform distribution over the rectange {[a_i, b_i]}_{i=1}^d
@@ -34,6 +34,8 @@ runif.seeder <- function(V, N, repl=20, crit="max_min")
   # CRIT ... selection criteria for replicants; can be one of the following 
   #           "max_min" ... maximum minimall pairwise distance between seeds
   #           "var" ... maximum sample variance among replicant's pairwise distances 
+  # INCLUDE_BOUNDARY ... if TRUE, add the vertices of the hyperrectangle defined by V to the seed set. Note, this will have the effect of
+  #                       generating N - 2^d random seed points
   # Returns 
   # SEEDS ... N x d dimensional matrix of seed locations 
   # note: probably want to insitute a minimum allowable distance between seeds to avoid numerical issues downstream: consider repulsive spring 
@@ -49,6 +51,10 @@ runif.seeder <- function(V, N, repl=20, crit="max_min")
   
   if (!is.numeric(N)) {
     stop("'N' must of of type 'numeric'")
+  }
+  
+  if (include_boundary) {
+    N <- N - 2^d
   }
   
   # build seeds sample 
@@ -72,6 +78,23 @@ runif.seeder <- function(V, N, repl=20, crit="max_min")
   }
   
   seeds <- replicants[ix,,]
+  
+  if (include_boundary) {
+    
+    helper1 <- function(row) {
+      result <- c()
+      for (i in 1:length(row)) {
+        result <- c(result, V[i, row[i]])
+      }
+      return(result)
+    }
+    
+    cix <- permutations(n=2, r=d, v=c(1,2), repeats.allowed = TRUE)
+    vertex_set <- t(apply(cix, 1, helper1))
+    seeds <- rbind(seeds, 
+                   vertex_set)
+    }
+
   return(seeds)
   
 }
