@@ -39,6 +39,16 @@ summary.repr <- function(object, ...) {
   warning("Summary method not yet implemented")
 }
 
+predict.repr <- function(object, newdata=NULL, ...) {
+  basis_object <- object$basis
+  coef <- object$coefs
+  if(is.null(newdata)){
+    newdata <- basis_object$seeds
+  }
+  Phi <- eval.basis(newdata, basis_object)
+  return(Phi %*% coef)
+}
+
 "+.repr" <- function(e1, e2){
   warning("Plus operation not yet implemented")
 }

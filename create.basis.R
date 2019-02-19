@@ -43,7 +43,11 @@ create.polynomial.basis <- function(seeds, chull=NULL,
       quad_points <- rbind(c(1, 0, 0), c(0, 1, 0), c(0, 0, 1), c(0, 0, 0),
                            c(1/3, 1/3, 1/3), c(0, 1/3, 1/3), c(1/3, 0, 1/3), c(1/3, 1/3, 0))
     } else {
-      stop("Numerical quadrature for d > 3 dimensional domain not yet implemented")
+      # bypass for now in order to test high-dimensional functional representation. 
+      # need to automatically generat quadrature rules for d > 3 
+      quad_weight <- c()
+      quad_points <- c()
+      #stop("Numerical quadrature for d > 3 dimensional domain not yet implemented")
     }
     quadvals <- list("quad_weight"=quad_weight,
                      "quad_points"=quad_points)
@@ -63,6 +67,7 @@ create.polynomial.basis <- function(seeds, chull=NULL,
   
   # define the Jacobian mapping to reference element for purposes of numerical integration
   shape_functions <- get.shape.functions(d, ord=norder)
+  #shape_functions <- NULL
   
   # create r matirx: mapper between basis function i, tessellation element j and local function definition k
   # in the form R_ij <- k, where k \in {0, 1, ..., S} and 0 indicates the constant 0 function

@@ -46,8 +46,6 @@ innerprod <- function(basis_object, nderiv=0)
     
   } else if (nderiv==1) {
      
-    # Note: This only works for regularly spaced grids at the moment -> don't think so, det_J(X_l) is computed
-    
     dV <- basis_object$shape_functions$dV
     det_J <- basis_object$shape_functions$det_J
     quad_points <- basis_object$quadvals$quad_points

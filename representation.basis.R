@@ -1,5 +1,5 @@
 
-representation.basis <- function(basis_object, X, Y, pen_mat=NULL, lambda=0) 
+representation.basis <- function(basis_object, X, Y, pen_mat=NULL, nderiv=0, lambda=0) 
 {
   # Represent a set of discrete observations to a smooth, pre-defined basis system
   # Arguments 
@@ -7,6 +7,7 @@ representation.basis <- function(basis_object, X, Y, pen_mat=NULL, lambda=0)
   # X ... nxd dimensional matrix of the n-observations points in d-dimensional (covariate) space
   # Y ... nx1 vector of function observations at covariates X 
   # PEN_MAT ... k x k dimensional penalty matrix for regularization of least-squares coefficient learning
+  # NDERIV ... order of derivative in PEN_MAT, should be nderiv <- nrow(PEN_MAT)-rank(PEN_MAT)
   # LAMBDA ... numeric, strength of regularization
   # Returns 
   # List containing...
@@ -83,9 +84,16 @@ representation.basis <- function(basis_object, X, Y, pen_mat=NULL, lambda=0)
   # set up normal equations 
   
   if (lambda > 0) {
-    pen_mat_sqrt <- sqrtm(pen_mat)$B # consider more stable solution to compute sqrt(pen_mat) using eigen-decomp
-    basis_mat <- rbind(Phi, sqrt(lambda)*pen_mat_sqrt)
-    Y_tilde <- rbind(Y, matrix(0, nrow=nrow(pen_mat_sqrt), ncol=1))
+    eigs <- eigen(pen_mat)
+    V <- eigs$vectors
+    J <- eigs$values
+    neff <- nbasis - nderiv
+    if (J[neff] <= 0) {
+      stop("(nbasis - nderiv)'th eigenvalue of penalty matrix is not positive!")
+    }
+    pen_eigen <- V[,1:neff] %*% diag(sqrt(J[1:neff]))
+    basis_mat <- rbind(Phi, sqrt(lambda)*t(pen_eigen))
+    Y_tilde <- rbind(Y, matrix(0, nrow=neff, ncol=1))
   } else {
     basis_mat <- Phi
     Y_tilde <- Y
