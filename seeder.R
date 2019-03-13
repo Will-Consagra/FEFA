@@ -78,6 +78,9 @@ runif.seeder <- function(V, N, repl=1, crit="max_min", include_boundary=TRUE)
   }
   
   seeds <- replicants[ix,,]
+  if (d == 1) {
+    seeds <- cbind(seeds)
+  }
   
   if (include_boundary) {
     
@@ -91,8 +94,12 @@ runif.seeder <- function(V, N, repl=1, crit="max_min", include_boundary=TRUE)
     
     cix <- permutations(n=2, r=d, v=c(1,2), repeats.allowed = TRUE)
     vertex_set <- t(apply(cix, 1, helper1))
-    seeds <- rbind(seeds, 
+    if (d == 1) {
+      seeds <- rbind(seeds, t(vertex_set))
+    } else {
+      seeds <- rbind(seeds, 
                    vertex_set)
+    }
     }
 
   return(seeds)
