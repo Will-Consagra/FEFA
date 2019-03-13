@@ -45,6 +45,11 @@ get.convex.hull <- function(X)
   # X ... M x d matrix, point cloud of which we wish to determine the convex hull 
   # RETURNS
   # CHULL ... R x d matrix, the R d-simplices defining the convexhull(X), given as indices into rows of X 
-  chull <- convhulln(X, options="Tv")
+  d <- ncol(X)
+  if (d == 1){
+    chull <- cbind(c(which.min(X), which.max(X)))
+  } else {
+    chull <- convhulln(X, options="Tv")
+  }
   return(chull)
 }

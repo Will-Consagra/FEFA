@@ -60,16 +60,21 @@ create.polynomial.basis <- function(seeds, chull=NULL,
   # construct tessellation of surface
   # for now this is restricted to be a d-simplicial complex, where simplices are associated to the space 
   # by the delaunay triangulation over the point cloud defined in seeds
-  
-  simplicial_complex = tryCatch(delaunayn(seeds), # note, probabaly should consider an object oriented approach to the tessellation
-                              warning = function(w) {print(w)}, 
-                              error = function(e) {stop(e)})
+  if (d==1) {
+    ordered_seeds <- order(seeds)
+    simplicial_complex <- t(sapply(1:(length(ordered_seeds)-1), 
+                                 function(i){return(c(ordered_seeds[i], ordered_seeds[i+1]))}))
+  } else {
+    simplicial_complex = tryCatch(delaunayn(seeds), # note, probabaly should consider an object oriented approach to the tessellation
+                                warning = function(w) {print(w)}, 
+                                error = function(e) {stop(e)})
+  }
   
   # define the Jacobian mapping to reference element for purposes of numerical integration
   shape_functions <- get.shape.functions(d, ord=norder)
   #shape_functions <- NULL
   
-  # create r matirx: mapper between basis function i, tessellation element j and local function definition k
+  # create r matrix: mapper between basis function i, tessellation element j and local function definition k
   # in the form R_ij <- k, where k \in {0, 1, ..., S} and 0 indicates the constant 0 function
   # note: enumeration technique for local shape functions is considered only for the linear functions over 
   # a reference simplex, higher order polynomials and alternative basis functions need to be considered seperately

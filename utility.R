@@ -17,8 +17,13 @@ tcovering <- function(seeds, elements, X)
   }
   
   if (d==1) {
-    # these are just intervals and the search is trivial
-    stop("Matrix construction for d=1 not yet implemented!!!!")
+    inters <- cbind(seeds[elements[, 1]], seeds[elements[, 2]])
+    ix <- apply(X, 1, 
+                function(x){return(which(x <= inters[,2])[1])})
+    eps <- cbind(sapply(1:nrow(X), 
+                  function(i){return((X[i]-inters[ix[i],1])/(inters[ix[i],2]-inters[ix[i],1]))}))
+    eps <- cbind(eps, 1-eps)
+    coords <- list(idx=ix, p=eps)
   }
   else {
     # use the function from geometry, this may not be optimal
