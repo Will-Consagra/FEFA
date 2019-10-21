@@ -85,9 +85,9 @@ integrate_error_poly <- function(Tau, x_tau, H_xtau, Sigma) {
 
 ## ToDo: Test out this code when simulating functions from random tensor basis!!!!
 
-p <- 3 
-Ap <- A(p)
-alpha_1 <- Ap[1, ]
-alpha_2 <- Ap[7, ]
-g_alpha_1 <- G(alpha_1)
-g_alpha_2 <- G(alpha_2)
+#p <- 3 
+#Ap <- A(p)
+#alpha_1 <- Ap[1, ]
+#alpha_2 <- Ap[7, ]
+#g_alpha_1 <- G(alpha_1)
+#g_alpha_2 <- G(alpha_2)
